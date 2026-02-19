@@ -5,552 +5,314 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>রমজান ডেইলি প্ল্যানার ১৪৪৭</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700&family=Noto+Sans+Bengali:wght@300;400;500&display=swap" rel="stylesheet">
-
-<!-- ═══════════════════════════════════════════════════════════════
-     STEP 1: Replace the firebaseConfig object below with YOUR
-     own config from the Firebase Console.
-     See SETUP_GUIDE.md for exact instructions.
-════════════════════════════════════════════════════════════════ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-           signOut, onAuthStateChanged, updateProfile }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, onSnapshot }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  // ▼▼▼ PASTE YOUR FIREBASE CONFIG HERE ▼▼▼
-  const firebaseConfig = {
-    apiKey:            "PASTE_YOUR_apiKey_HERE",
-    authDomain:        "PASTE_YOUR_authDomain_HERE",
-    projectId:         "PASTE_YOUR_projectId_HERE",
-    storageBucket:     "PASTE_YOUR_storageBucket_HERE",
-    messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
-    appId:             "PASTE_YOUR_appId_HERE"
-  };
-  // ▲▲▲ END OF CONFIG ▲▲▲
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-
-  // ── Expose to global scope so inline JS can call them ──────────
-  window._auth = auth;
-  window._db   = db;
-  window._fbFns = { createUserWithEmailAndPassword, signInWithEmailAndPassword,
-                    signOut, onAuthStateChanged, updateProfile,
-                    doc, setDoc, getDoc, onSnapshot };
-</script>
-
 <style>
-:root {
-  --bg: #f5f0e8;
-  --card: #fffdf8;
-  --dark: #1a2e28;
-  --teal: #2d5a4e;
-  --teal-light: #3d7a6a;
-  --gold: #b8960c;
-  --gold-light: #d4ac1a;
-  --text: #2a2a2a;
-  --muted: #6b6b6b;
-  --checked: #2d5a4e;
-  --border: #c8c0aa;
-  --danger: #c0392b;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  background: var(--bg);
-  background-image:
-    radial-gradient(ellipse at 10% 20%, rgba(45,90,78,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 80%, rgba(184,150,12,0.05) 0%, transparent 50%);
-  font-family: 'Noto Sans Bengali', sans-serif;
-  color: var(--text);
-  min-height: 100vh;
-}
+  :root {
+    --bg: #f5f0e8;
+    --card: #fffdf8;
+    --dark: #1a2e28;
+    --teal: #2d5a4e;
+    --teal-light: #3d7a6a;
+    --gold: #b8960c;
+    --gold-light: #d4ac1a;
+    --text: #2a2a2a;
+    --muted: #6b6b6b;
+    --checked: #2d5a4e;
+    --unchecked: #ddd8cc;
+    --border: #c8c0aa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(45,90,78,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(184,150,12,0.05) 0%, transparent 50%);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
 
-/* ── AUTH SCREEN ─────────────────────────────────────────────── */
-#authScreen {
-  min-height: 100vh;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.auth-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 40px 36px;
-  width: 100%; max-width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-}
-.auth-logo {
-  text-align: center; margin-bottom: 28px;
-}
-.auth-logo h1 {
-  font-family: 'Noto Serif Bengali', serif;
-  font-size: 1.8rem; font-weight: 700; color: var(--dark);
-  line-height: 1.2;
-}
-.auth-logo p { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
-.auth-logo .moon { font-size: 2.5rem; display: block; margin-bottom: 8px; }
+  /* HEADER */
+  header {
+    background: var(--dark);
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  header h1 { font-family: 'Noto Serif Bengali', serif; font-size: 1.7rem; font-weight: 700; color: #fff; line-height: 1; }
+  header h1 span { color: var(--gold-light); display: block; font-size: 0.8rem; font-weight: 400; margin-bottom: 3px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .day-nav { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border-radius: 50px; padding: 6px 12px; }
+  .day-nav button { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .day-nav button:hover { background: rgba(255,255,255,0.15); }
+  .day-nav .current-day { font-family: 'Noto Serif Bengali', serif; font-size: 0.95rem; color: var(--gold-light); min-width: 90px; text-align: center; }
+  .progress-bar-wrap { background: rgba(255,255,255,0.1); border-radius: 20px; height: 6px; width: 120px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); border-radius: 20px; transition: width 0.4s ease; }
 
-.auth-tabs {
-  display: flex; background: var(--bg);
-  border-radius: 10px; padding: 4px; margin-bottom: 24px;
-  border: 1px solid var(--border);
-}
-.auth-tab {
-  flex: 1; padding: 8px; border: none; background: transparent;
-  font-family: 'Noto Serif Bengali', serif; font-size: 0.9rem;
-  cursor: pointer; border-radius: 7px; color: var(--muted);
-  transition: all 0.2s;
-}
-.auth-tab.active { background: var(--dark); color: #fff; }
+  /* SECTION LABEL */
+  .section-label { font-family: 'Noto Serif Bengali', serif; font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-.form-group { margin-bottom: 16px; }
-.form-group label {
-  display: block; font-family: 'Noto Serif Bengali', serif;
-  font-size: 0.82rem; color: var(--muted); margin-bottom: 6px;
-}
-.form-group input {
-  width: 100%; padding: 11px 14px;
-  border: 1.5px solid var(--border); border-radius: 10px;
-  font-family: 'Noto Sans Bengali', sans-serif; font-size: 0.9rem;
-  background: #fff; color: var(--text);
-  transition: border-color 0.2s;
-  outline: none;
-}
-.form-group input:focus { border-color: var(--teal); }
-.auth-btn {
-  width: 100%; padding: 13px;
-  background: var(--teal); color: #fff; border: none;
-  border-radius: 10px; font-family: 'Noto Serif Bengali', serif;
-  font-size: 1rem; cursor: pointer; margin-top: 4px;
-  transition: background 0.2s;
-}
-.auth-btn:hover { background: var(--teal-light); }
-.auth-btn:disabled { background: #aaa; cursor: not-allowed; }
-.auth-error {
-  background: #fde8e6; border: 1px solid #f5c6c2;
-  border-radius: 8px; padding: 10px 14px;
-  font-size: 0.82rem; color: var(--danger);
-  margin-bottom: 14px; display: none;
-}
+  /* NAMAZ SECTION */
+  .namaz-section { max-width: 1200px; margin: 28px auto 0; padding: 0 20px; }
 
-/* ── HEADER ──────────────────────────────────────────────────── */
-header {
-  background: var(--dark); padding: 16px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-.header-left h1 {
-  font-family: 'Noto Serif Bengali', serif;
-  font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1;
-}
-.header-left h1 span {
-  color: var(--gold-light); display: block;
-  font-size: 0.75rem; font-weight: 400; margin-bottom: 3px;
-}
-.header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .namaz-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
 
-.user-pill {
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 50px; padding: 6px 12px 6px 8px;
-}
-.user-avatar {
-  width: 30px; height: 30px; border-radius: 50%;
-  background: var(--gold); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Noto Serif Bengali', serif; font-size: 0.85rem; font-weight: 700;
-  flex-shrink: 0;
-}
-.user-name { font-size: 0.82rem; color: rgba(255,255,255,0.85); }
+  .wakt-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .wakt-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); transform: translateY(-2px); }
 
-.sync-indicator {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 0.72rem; color: rgba(255,255,255,0.55);
-}
-.sync-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #4caf50; flex-shrink: 0;
-  animation: pulse 2s infinite;
-}
-.sync-dot.syncing { background: var(--gold-light); animation: none; }
-.sync-dot.offline { background: #e74c3c; animation: none; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .wakt-header { padding: 12px 14px 10px; display: flex; align-items: center; justify-content: space-between; }
+  .wakt-fajr    .wakt-header { background: linear-gradient(135deg, #1a2e3a, #2a4a5e); }
+  .wakt-dhuhr   .wakt-header { background: linear-gradient(135deg, #2e3a1a, #4a6030); }
+  .wakt-asr     .wakt-header { background: linear-gradient(135deg, #3a2e1a, #6a5030); }
+  .wakt-maghrib .wakt-header { background: linear-gradient(135deg, #3a1a1a, #7a3030); }
+  .wakt-isha    .wakt-header { background: linear-gradient(135deg, #1a1a3a, #2a2a6a); }
 
-.day-nav {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 50px; padding: 5px 10px;
-}
-.day-nav button {
-  background: none; border: none; color: #fff;
-  font-size: 1.1rem; cursor: pointer;
-  width: 26px; height: 26px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
-}
-.day-nav button:hover { background: rgba(255,255,255,0.15); }
-.current-day {
-  font-family: 'Noto Serif Bengali', serif;
-  font-size: 0.9rem; color: var(--gold-light);
-  min-width: 80px; text-align: center;
-}
-.progress-bar-wrap {
-  background: rgba(255,255,255,0.1);
-  border-radius: 20px; height: 5px; width: 100px; overflow: hidden;
-}
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold-light));
-  border-radius: 20px; transition: width 0.4s ease;
-}
-.logout-btn {
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.7); padding: 6px 12px;
-  border-radius: 8px; font-size: 0.78rem; cursor: pointer;
-  transition: all 0.2s;
-}
-.logout-btn:hover { background: rgba(255,0,0,0.2); color: #fff; border-color: rgba(255,0,0,0.3); }
+  .wakt-name { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; font-weight: 700; color: #fff; }
+  .wakt-icon { font-size: 1.2rem; }
+  .wakt-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
 
-/* ── SECTION LABEL ──────────────────────────────────────────── */
-.section-label {
-  font-family: 'Noto Serif Bengali', serif;
-  font-size: 1.05rem; font-weight: 700; color: var(--dark);
-  margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
-}
-.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .location-toggle { display: flex; background: var(--bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .loc-btn { flex: 1; padding: 6px 4px; border: none; background: transparent; font-family: 'Noto Serif Bengali', serif; font-size: 0.72rem; cursor: pointer; color: var(--muted); transition: all 0.18s; text-align: center; line-height: 1.3; }
+  .loc-btn.active-home   { background: var(--teal); color: #fff; border-radius: 6px; }
+  .loc-btn.active-masjid { background: var(--gold);  color: #fff; border-radius: 6px; }
 
-/* ── NAMAZ SECTION ───────────────────────────────────────────── */
-.namaz-section { max-width: 1200px; margin: 24px auto 0; padding: 0 20px; }
-.namaz-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px; margin-bottom: 14px;
-}
-.wakt-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  transition: box-shadow 0.2s, transform 0.2s;
-}
-.wakt-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); transform: translateY(-2px); }
-.wakt-header { padding: 12px 14px 10px; display: flex; align-items: center; justify-content: space-between; }
-.wakt-fajr    .wakt-header { background: linear-gradient(135deg, #1a2e3a, #2a4a5e); }
-.wakt-dhuhr   .wakt-header { background: linear-gradient(135deg, #2e3a1a, #4a6030); }
-.wakt-asr     .wakt-header { background: linear-gradient(135deg, #3a2e1a, #6a5030); }
-.wakt-maghrib .wakt-header { background: linear-gradient(135deg, #3a1a1a, #7a3030); }
-.wakt-isha    .wakt-header { background: linear-gradient(135deg, #1a1a3a, #2a2a6a); }
-.wakt-name { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; font-weight: 700; color: #fff; }
-.wakt-icon { font-size: 1.2rem; }
-.wakt-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
-.location-toggle { display: flex; background: var(--bg); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
-.loc-btn { flex: 1; padding: 6px 4px; border: none; background: transparent; font-family: 'Noto Serif Bengali', serif; font-size: 0.72rem; cursor: pointer; color: var(--muted); transition: all 0.18s; text-align: center; line-height: 1.3; }
-.loc-btn.active-home   { background: var(--teal); color: #fff; border-radius: 6px; }
-.loc-btn.active-masjid { background: var(--gold);  color: #fff; border-radius: 6px; }
-.ncheck-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
-.nchk { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #fff; transition: all 0.18s; font-size: 12px; font-weight: 700; color: transparent; user-select: none; }
-.nchk.fard-on   { background: var(--teal); border-color: var(--teal); color: #fff; }
-.nchk.sunnah-on { background: var(--gold); border-color: var(--gold); color: #fff; }
-.nchk-label { font-size: 0.75rem; font-family: 'Noto Serif Bengali', serif; color: var(--muted); flex: 1; }
+  .ncheck-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+  .nchk {
+    width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; background: #fff; transition: all 0.18s;
+    font-size: 12px; font-weight: 700; color: transparent; user-select: none;
+  }
+  .nchk.fard-on   { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .nchk.sunnah-on { background: var(--gold); border-color: var(--gold); color: #fff; }
+  .nchk-label { font-size: 0.75rem; font-family: 'Noto Serif Bengali', serif; color: var(--muted); flex: 1; }
 
-/* Special cards */
-.special-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }
-.special-card {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: 14px; padding: 14px 16px;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 0;
-  cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04); user-select: none;
-}
-.special-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-.special-card.done-tarawih  { background: linear-gradient(135deg, #1a3830, #2d5a4e); border-color: var(--teal); }
-.special-card.done-tahajjud { background: linear-gradient(135deg, #1a1a3a, #2a2a6a); border-color: #5a5a9e; }
-.sp-top { display: flex; align-items: center; gap: 12px; width: 100%; }
-.sp-icon { font-size: 1.8rem; flex-shrink: 0; }
-.sp-info { flex: 1; }
-.sp-name { font-family: 'Noto Serif Bengali', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); }
-.special-card.done-tarawih .sp-name, .special-card.done-tahajjud .sp-name { color: #fff; }
-.sp-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-.special-card.done-tarawih .sp-sub, .special-card.done-tahajjud .sp-sub { color: rgba(255,255,255,0.65); }
-.sp-chk { width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: transparent; transition: all 0.2s; flex-shrink: 0; }
-.special-card.done-tarawih  .sp-chk { background: var(--gold-light); border-color: var(--gold); color: #fff; }
-.special-card.done-tahajjud .sp-chk { background: #6a5acd; border-color: #5a4aad; color: #fff; }
-.rakat-row { width: 100%; display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-.special-card.done-tarawih  .rakat-row,
-.special-card.done-tahajjud .rakat-row { border-top-color: rgba(255,255,255,0.15); }
-.rakat-lbl { font-family: 'Noto Serif Bengali', serif; font-size: 0.73rem; color: var(--muted); flex: 1; }
-.special-card.done-tarawih  .rakat-lbl,
-.special-card.done-tahajjud .rakat-lbl { color: rgba(255,255,255,0.7); }
-.rbtn { width: 26px; height: 26px; border-radius: 7px; border: 1.5px solid var(--border); background: #fff; font-size: 1.1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--teal); transition: all 0.15s; flex-shrink: 0; line-height: 1; user-select: none; }
-.rbtn:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
-.special-card.done-tarawih  .rbtn,
-.special-card.done-tahajjud .rbtn { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.12); color: #fff; }
-.special-card.done-tarawih  .rbtn:hover,
-.special-card.done-tahajjud .rbtn:hover { background: rgba(255,255,255,0.28); }
-.rakat-num { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; font-weight: 700; color: var(--teal); min-width: 28px; text-align: center; }
-.special-card.done-tarawih  .rakat-num,
-.special-card.done-tahajjud .rakat-num { color: #fff; }
+  /* Special cards */
+  .special-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }
+  .special-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04); user-select: none;
+  }
+  .special-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .special-card.done-tarawih  { background: linear-gradient(135deg, #1a3830, #2d5a4e); border-color: var(--teal); }
+  .special-card.done-tahajjud { background: linear-gradient(135deg, #1a1a3a, #2a2a6a); border-color: #5a5a9e; }
+  .sp-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .sp-info { flex: 1; }
+  .sp-name { font-family: 'Noto Serif Bengali', serif; font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .special-card.done-tarawih .sp-name, .special-card.done-tahajjud .sp-name { color: #fff; }
+  .sp-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .special-card.done-tarawih .sp-sub, .special-card.done-tahajjud .sp-sub { color: rgba(255,255,255,0.65); }
+  .sp-chk { width: 30px; height: 30px; border-radius: 8px; border: 2px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: transparent; transition: all 0.2s; flex-shrink: 0; }
+  .special-card.done-tarawih  .sp-chk { background: var(--gold-light); border-color: var(--gold); color: #fff; }
+  .special-card.done-tahajjud .sp-chk { background: #6a5acd; border-color: #5a4aad; color: #fff; }
 
-/* ── MAIN LAYOUT ─────────────────────────────────────────────── */
-.main { max-width: 1200px; margin: 24px auto 40px; padding: 0 20px; display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
+  /* Rakat counter inside special cards */
+  .special-card { flex-wrap: wrap; }
+  .sp-top { display: flex; align-items: center; gap: 12px; width: 100%; }
+  .rakat-row {
+    width: 100%; display: flex; align-items: center; gap: 8px;
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+  .special-card.done-tarawih  .rakat-row,
+  .special-card.done-tahajjud .rakat-row { border-top-color: rgba(255,255,255,0.15); }
+  .rakat-lbl { font-family: 'Noto Serif Bengali', serif; font-size: 0.73rem; color: var(--muted); flex: 1; }
+  .special-card.done-tarawih  .rakat-lbl,
+  .special-card.done-tahajjud .rakat-lbl { color: rgba(255,255,255,0.7); }
+  .rbtn {
+    width: 26px; height: 26px; border-radius: 7px;
+    border: 1.5px solid var(--border); background: #fff;
+    font-size: 1.1rem; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--teal); transition: all 0.15s; flex-shrink: 0; line-height: 1;
+    user-select: none;
+  }
+  .rbtn:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .special-card.done-tarawih  .rbtn,
+  .special-card.done-tahajjud .rbtn { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.12); color: #fff; }
+  .special-card.done-tarawih  .rbtn:hover,
+  .special-card.done-tahajjud .rbtn:hover { background: rgba(255,255,255,0.28); }
+  .rakat-num { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; font-weight: 700; color: var(--teal); min-width: 28px; text-align: center; }
+  .special-card.done-tarawih  .rakat-num,
+  .special-card.done-tahajjud .rakat-num { color: #fff; }
 
-/* ── AMAL CATEGORIES ─────────────────────────────────────────── */
-.category { background: var(--card); border-radius: 14px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
-.category:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-.category-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; }
-.category-header.fard   { background: #1a3830; }
-.category-header.sunnah { background: #2d5a4e; }
-.category-header.akhlaq { background: #5a6e45; }
-.cat-name { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; color: #fff; font-weight: 600; }
-.cat-meta { display: flex; align-items: center; gap: 10px; }
-.cat-progress { font-size: 0.8rem; color: rgba(255,255,255,0.75); }
-.cat-toggle { color: #fff; font-size: 1rem; transition: transform 0.25s; }
-.category.collapsed .cat-toggle { transform: rotate(-90deg); }
-.category-body { padding: 12px 18px 16px; display: grid; gap: 8px; }
-.category.collapsed .category-body { display: none; }
-.amal-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; transition: background 0.15s; }
-.amal-row:hover { background: rgba(45,90,78,0.04); }
-.checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; background: #fff; user-select: none; }
-.checkbox.checked { background: var(--checked); border-color: var(--checked); }
-.checkbox.checked::after { content: '✓'; color: #fff; font-size: 13px; font-weight: 700; }
-.amal-name { font-family: 'Noto Serif Bengali', serif; font-size: 0.9rem; color: var(--text); flex: 1; }
-.amal-streak { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
+  /* MAIN */
+  .main { max-width: 1200px; margin: 24px auto 40px; padding: 0 20px; display: grid; grid-template-columns: 1fr 340px; gap: 24px; }
 
-/* ── SIDEBAR ─────────────────────────────────────────────────── */
-.dua-card { background: var(--dark); border-radius: 16px; padding: 24px; color: #fff; margin-bottom: 20px; position: relative; overflow: hidden; }
-.dua-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: rgba(184,150,12,0.12); }
-.dua-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
-.dua-arabic { font-size: 1.2rem; line-height: 2; color: var(--gold-light); text-align: right; margin-bottom: 14px; direction: rtl; }
-.dua-meaning { font-size: 0.82rem; color: rgba(255,255,255,0.8); line-height: 1.7; font-family: 'Noto Serif Bengali', serif; }
-.stats-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-.stat-item { background: var(--bg); border-radius: 10px; padding: 14px; text-align: center; }
-.stat-num { font-family: 'Noto Serif Bengali', serif; font-size: 1.6rem; font-weight: 700; color: var(--teal); }
-.stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
-.month-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
-.heatmap { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 14px; }
-.hm-cell { aspect-ratio: 1; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.8); transition: transform 0.15s; position: relative; }
-.hm-cell:hover { transform: scale(1.15); z-index: 2; }
-.hm-cell.hm-great   { background: #1a3830; }
-.hm-cell.hm-done    { background: var(--teal); }
-.hm-cell.hm-partial { background: var(--gold); color: #fff; }
-.hm-cell.hm-empty   { background: #ddd8cc; color: #999; }
-.hm-cell.hm-future  { background: #e8e3d8; color: #bbb; }
-.hm-cell.hm-active  { box-shadow: 0 0 0 2px var(--gold); }
-.legend { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--muted); }
-.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-.save-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 12px; font-family: 'Noto Serif Bengali', serif; font-size: 0.95rem; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
-.save-btn:hover { background: var(--teal-light); }
+  /* AMAL CATEGORIES */
+  .category { background: var(--card); border-radius: 14px; margin-bottom: 10px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: box-shadow 0.2s; }
+  .category:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .category-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; }
+  .category-header.fard   { background: #1a3830; }
+  .category-header.sunnah { background: #2d5a4e; }
+  .category-header.akhlaq { background: #5a6e45; }
+  .cat-name { font-family: 'Noto Serif Bengali', serif; font-size: 1rem; color: #fff; font-weight: 600; }
+  .cat-meta { display: flex; align-items: center; gap: 10px; }
+  .cat-progress { font-size: 0.8rem; color: rgba(255,255,255,0.75); }
+  .cat-toggle { color: #fff; font-size: 1rem; transition: transform 0.25s; }
+  .category.collapsed .cat-toggle { transform: rotate(-90deg); }
+  .category-body { padding: 12px 18px 16px; display: grid; gap: 8px; }
+  .category.collapsed .category-body { display: none; }
+  .amal-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; transition: background 0.15s; }
+  .amal-row:hover { background: rgba(45,90,78,0.04); }
+  .checkbox { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; background: #fff; user-select: none; }
+  .checkbox.checked { background: var(--checked); border-color: var(--checked); }
+  .checkbox.checked::after { content: '✓'; color: #fff; font-size: 13px; font-weight: 700; }
+  .amal-name { font-family: 'Noto Serif Bengali', serif; font-size: 0.9rem; color: var(--text); flex: 1; }
+  .amal-streak { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
 
-/* Toast */
-.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--dark); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 0.85rem; font-family: 'Noto Serif Bengali', serif; transition: transform 0.3s ease; z-index: 999; border-left: 3px solid var(--gold); white-space: nowrap; }
-.toast.show { transform: translateX(-50%) translateY(0); }
+  /* SIDEBAR */
+  .dua-card { background: var(--dark); border-radius: 16px; padding: 24px; color: #fff; margin-bottom: 20px; position: relative; overflow: hidden; }
+  .dua-card::before { content: ''; position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background: rgba(184,150,12,0.12); }
+  .dua-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+  .dua-arabic { font-size: 1.25rem; line-height: 2; color: var(--gold-light); text-align: right; margin-bottom: 14px; direction: rtl; }
+  .dua-meaning { font-size: 0.82rem; color: rgba(255,255,255,0.8); line-height: 1.7; font-family: 'Noto Serif Bengali', serif; }
+  .stats-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .stat-item { background: var(--bg); border-radius: 10px; padding: 14px; text-align: center; }
+  .stat-num { font-family: 'Noto Serif Bengali', serif; font-size: 1.6rem; font-weight: 700; color: var(--teal); }
+  .stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .month-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
+  .heatmap { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 14px; }
+  .hm-cell { aspect-ratio: 1; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.8); transition: transform 0.15s; position: relative; }
+  .hm-cell:hover { transform: scale(1.15); z-index: 2; }
+  .hm-cell.hm-great   { background: #1a3830; }
+  .hm-cell.hm-done    { background: var(--teal); }
+  .hm-cell.hm-partial { background: var(--gold); color: #fff; }
+  .hm-cell.hm-empty   { background: var(--unchecked); color: #999; }
+  .hm-cell.hm-future  { background: #e8e3d8; color: #bbb; }
+  .hm-cell.hm-active  { box-shadow: 0 0 0 2px var(--gold); }
+  .legend { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.7rem; color: var(--muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .save-btn { width: 100%; background: var(--teal); color: #fff; border: none; border-radius: 10px; padding: 12px; font-family: 'Noto Serif Bengali', serif; font-size: 0.95rem; cursor: pointer; margin-top: 16px; transition: background 0.2s; }
+  .save-btn:hover { background: var(--teal-light); }
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--dark); color: #fff; padding: 12px 24px; border-radius: 50px; font-size: 0.85rem; font-family: 'Noto Serif Bengali', serif; transition: transform 0.3s ease; z-index: 999; border-left: 3px solid var(--gold); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 
-/* Loading */
-#loadingScreen { position: fixed; inset: 0; background: var(--dark); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 16px; }
-#loadingScreen .moon { font-size: 3rem; animation: spin 2s linear infinite; }
-@keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-#loadingScreen p { color: var(--gold-light); font-family: 'Noto Serif Bengali', serif; font-size: 1rem; }
-
-/* Hidden */
-.hidden { display: none !important; }
-
-@media (max-width: 900px) {
-  .namaz-grid { grid-template-columns: repeat(3, 1fr); }
-  .main { grid-template-columns: 1fr; }
-  header { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
-  .header-left h1 { font-size: 1.2rem; }
-  .progress-bar-wrap { width: 70px; }
-}
-@media (max-width: 600px) {
-  .namaz-grid { grid-template-columns: repeat(2, 1fr); }
-  .special-row { grid-template-columns: 1fr; }
-  .header-right { gap: 8px; }
-}
+  @media (max-width: 900px) {
+    .namaz-grid { grid-template-columns: repeat(3, 1fr); }
+    .main { grid-template-columns: 1fr; }
+    header { padding: 16px 20px; }
+    header h1 { font-size: 1.3rem; }
+  }
+  @media (max-width: 600px) {
+    .namaz-grid { grid-template-columns: repeat(2, 1fr); }
+    .special-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div id="loadingScreen">
-  <div class="moon">🌙</div>
-  <p>লোড হচ্ছে...</p>
-</div>
-
-<!-- ══════════ AUTH SCREEN ══════════ -->
-<div id="authScreen" class="hidden">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <span class="moon">🌙</span>
-      <h1>রমজান ডেইলি প্ল্যানার</h1>
-      <p>১৪৪৭ হিজরি · ২০২৬ ইংরেজি</p>
+<header>
+  <h1>
+    <span>১৪৪৭ হিজরি · ২০২৬ ইংরেজি</span>
+    রমজান ডেইলি প্ল্যানার
+  </h1>
+  <div class="header-right">
+    <div class="day-nav">
+      <button onclick="prevDay()">&#8249;</button>
+      <span class="current-day" id="dayLabel">১ রমজান</span>
+      <button onclick="nextDay()">&#8250;</button>
     </div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="loginTab" onclick="switchTab('login')">লগইন</button>
-      <button class="auth-tab" id="registerTab" onclick="switchTab('register')">নতুন অ্যাকাউন্ট</button>
-    </div>
-    <div class="auth-error" id="authError"></div>
-
-    <!-- Login Form -->
-    <div id="loginForm">
-      <div class="form-group">
-        <label>ইমেইল</label>
-        <input type="email" id="loginEmail" placeholder="আপনার ইমেইল লিখুন">
-      </div>
-      <div class="form-group">
-        <label>পাসওয়ার্ড</label>
-        <input type="password" id="loginPass" placeholder="পাসওয়ার্ড লিখুন" onkeydown="if(event.key==='Enter')doLogin()">
-      </div>
-      <button class="auth-btn" id="loginBtn" onclick="doLogin()">লগইন করুন</button>
-    </div>
-
-    <!-- Register Form -->
-    <div id="registerForm" class="hidden">
-      <div class="form-group">
-        <label>আপনার নাম</label>
-        <input type="text" id="regName" placeholder="যেমন: Abdullah Al Noman">
-      </div>
-      <div class="form-group">
-        <label>ইমেইল</label>
-        <input type="email" id="regEmail" placeholder="আপনার ইমেইল লিখুন">
-      </div>
-      <div class="form-group">
-        <label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label>
-        <input type="password" id="regPass" placeholder="পাসওয়ার্ড তৈরি করুন" onkeydown="if(event.key==='Enter')doRegister()">
-      </div>
-      <button class="auth-btn" id="registerBtn" onclick="doRegister()">অ্যাকাউন্ট তৈরি করুন</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ MAIN APP ══════════ -->
-<div id="appScreen" class="hidden">
-
-  <header>
-    <div class="header-left">
-      <h1>
-        <span>১৪৪৭ হিজরি · ২০২৬ ইংরেজি</span>
-        রমজান ডেইলি প্ল্যানার
-      </h1>
-    </div>
-    <div class="header-right">
-      <div class="sync-indicator">
-        <div class="sync-dot" id="syncDot"></div>
-        <span id="syncLabel">সিঙ্ক হয়েছে</span>
-      </div>
-      <div class="day-nav">
-        <button onclick="prevDay()">&#8249;</button>
-        <span class="current-day" id="dayLabel">১ রমজান</span>
-        <button onclick="nextDay()">&#8250;</button>
-      </div>
+    <div>
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" id="dayProgress" style="width:0%"></div>
       </div>
-      <div class="user-pill">
-        <div class="user-avatar" id="userAvatar">?</div>
-        <span class="user-name" id="userName">লোড হচ্ছে...</span>
-      </div>
-      <button class="logout-btn" onclick="doLogout()">লগআউট</button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <!-- NAMAZ SECTION -->
-  <div class="namaz-section">
-    <div class="section-label">🕌 নামাজ ট্র্যাকার</div>
-    <div class="namaz-grid" id="namazGrid"></div>
-    <div class="special-row">
-      <div class="special-card" id="tarawihCard" onclick="toggleSpecial('tarawih')">
-        <div class="sp-top">
-          <div class="sp-icon">🌙</div>
-          <div class="sp-info">
-            <div class="sp-name">তারাবিহ নামাজ</div>
-            <div class="sp-sub">ইশার পর · মসজিদ বা বাড়িতে</div>
-          </div>
-          <div class="sp-chk">&#10003;</div>
+<!-- NAMAZ SECTION -->
+<div class="namaz-section">
+  <div class="section-label">🕌 নামাজ ট্র্যাকার</div>
+  <div class="namaz-grid" id="namazGrid"></div>
+  <div class="special-row">
+    <div class="special-card" id="tarawihCard" onclick="toggleSpecial('tarawih')">
+      <div class="sp-top">
+        <div class="sp-icon">🌙</div>
+        <div class="sp-info">
+          <div class="sp-name">তারাবিহ নামাজ</div>
+          <div class="sp-sub">ইশার পর · মসজিদ বা বাড়িতে</div>
         </div>
-        <div class="rakat-row" onclick="event.stopPropagation()">
-          <span class="rakat-lbl">কত রাকাত পড়লাম:</span>
-          <button class="rbtn" onclick="changeRakat('tarawih',-2)">&#8722;</button>
-          <span class="rakat-num" id="tarawihRakat">০</span>
-          <button class="rbtn" onclick="changeRakat('tarawih',2)">&#43;</button>
-        </div>
+        <div class="sp-chk">&#10003;</div>
       </div>
-      <div class="special-card" id="tahajjudCard" onclick="toggleSpecial('tahajjud')">
-        <div class="sp-top">
-          <div class="sp-icon">&#11088;</div>
-          <div class="sp-info">
-            <div class="sp-name">তাহাজ্জুদ নামাজ</div>
-            <div class="sp-sub">রাতের শেষ তৃতীয়াংশে</div>
-          </div>
-          <div class="sp-chk">&#10003;</div>
+      <div class="rakat-row" onclick="event.stopPropagation()">
+        <span class="rakat-lbl">কত রাকাত পড়লাম:</span>
+        <button class="rbtn" onclick="changeRakat('tarawih',-2)">&#8722;</button>
+        <span class="rakat-num" id="tarawihRakat">০</span>
+        <button class="rbtn" onclick="changeRakat('tarawih',2)">&#43;</button>
+      </div>
+    </div>
+    <div class="special-card" id="tahajjudCard" onclick="toggleSpecial('tahajjud')">
+      <div class="sp-top">
+        <div class="sp-icon">&#11088;</div>
+        <div class="sp-info">
+          <div class="sp-name">তাহাজ্জুদ নামাজ</div>
+          <div class="sp-sub">রাতের শেষ তৃতীয়াংশে</div>
         </div>
-        <div class="rakat-row" onclick="event.stopPropagation()">
-          <span class="rakat-lbl">কত রাকাত পড়লাম:</span>
-          <button class="rbtn" onclick="changeRakat('tahajjud',-2)">&#8722;</button>
-          <span class="rakat-num" id="tahajjudRakat">০</span>
-          <button class="rbtn" onclick="changeRakat('tahajjud',2)">&#43;</button>
-        </div>
+        <div class="sp-chk">&#10003;</div>
+      </div>
+      <div class="rakat-row" onclick="event.stopPropagation()">
+        <span class="rakat-lbl">কত রাকাত পড়লাম:</span>
+        <button class="rbtn" onclick="changeRakat('tahajjud',-2)">&#8722;</button>
+        <span class="rakat-num" id="tahajjudRakat">০</span>
+        <button class="rbtn" onclick="changeRakat('tahajjud',2)">&#43;</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MAIN -->
-  <div class="main">
-    <div id="trackerSection">
-      <div class="section-label">📋 আজকের আমল ট্র্যাকার</div>
+<!-- MAIN -->
+<div class="main">
+  <div id="trackerSection">
+    <div class="section-label">📋 আজকের আমল ট্র্যাকার</div>
+  </div>
+  <div class="sidebar">
+    <div class="dua-card">
+      <div class="dua-title">ইফতারের পর দোয়া</div>
+      <div class="dua-arabic">&#1584;&#1614;&#1607;&#1614;&#1576;&#1614; &#1575;&#1604;&#1592;&#1617;&#1614;&#1605;&#1614;&#1575;&#1569;&#1615; &#1608;&#1614;&#1575;&#1576;&#1618;&#1578;&#1614;&#1604;&#1617;&#1614;&#1578;&#1616; &#1575;&#1604;&#1618;&#1593;&#1615;&#1585;&#1615;&#1608;&#1602;&#1615;<br>&#1608;&#1614; &#1579;&#1614;&#1576;&#1614;&#1578;&#1614; &#1575;&#1604;&#1623;&#1614;&#1580;&#1618;&#1615; &#1573;&#1616;&#1606;&#1618; &#1588;&#1614;&#1575;&#1569;&#1614; &#1575;&#1604;&#1604;&#1607;</div>
+      <div class="dua-meaning">অর্থ: পিপাসা দূর হলো, শিরা-উপশিরা সিক্ত হলো এবং যদি আল্লাহ চান, সাওয়াবও স্থির হলো।<br><span style="color:rgba(255,255,255,0.5);font-size:0.75rem;">(আবু দাউদ, মিশকাত)</span></div>
     </div>
-    <div class="sidebar">
-      <div class="dua-card">
-        <div class="dua-title">ইফতারের পর দোয়া</div>
-        <div class="dua-arabic">ذَهَبَ الظَّمَاءُ وَابْتَلَّتِ الْعُرُوقُ<br>وَ ثَبَتَ الأَجْرُ إِنْ شَاءَ الله</div>
-        <div class="dua-meaning">অর্থ: পিপাসা দূর হলো, শিরা-উপশিরা সিক্ত হলো এবং যদি আল্লাহ চান, সাওয়াবও স্থির হলো।<br><span style="color:rgba(255,255,255,0.5);font-size:0.75rem;">(আবু দাউদ, মিশকাত)</span></div>
+    <div class="stats-card">
+      <div class="section-label">📊 পরিসংখ্যান</div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-num" id="statDone">০</div><div class="stat-label">সম্পূর্ণ দিন</div></div>
+        <div class="stat-item"><div class="stat-num" id="statStreak">০</div><div class="stat-label">ধারাবাহিক দিন</div></div>
+        <div class="stat-item"><div class="stat-num" id="statAmal">০</div><div class="stat-label">আজ আমল</div></div>
+        <div class="stat-item"><div class="stat-num" id="statTotal">০</div><div class="stat-label">মোট আমল</div></div>
       </div>
-      <div class="stats-card">
-        <div class="section-label">📊 পরিসংখ্যান</div>
-        <div class="stats-grid">
-          <div class="stat-item"><div class="stat-num" id="statDone">০</div><div class="stat-label">সম্পূর্ণ দিন</div></div>
-          <div class="stat-item"><div class="stat-num" id="statStreak">০</div><div class="stat-label">ধারাবাহিক দিন</div></div>
-          <div class="stat-item"><div class="stat-num" id="statAmal">০</div><div class="stat-label">আজ আমল</div></div>
-          <div class="stat-item"><div class="stat-num" id="statTotal">০</div><div class="stat-label">মোট আমল</div></div>
-        </div>
-        <button class="save-btn" onclick="saveToCloud()">☁️ ক্লাউডে সংরক্ষণ করুন</button>
-      </div>
-      <div class="month-card">
-        <div class="section-label">📅 মাসিক ওভারভিউ</div>
-        <div class="heatmap" id="heatmap"></div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>সম্পূর্ণ</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>আংশিক</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#ddd8cc"></div>খালি</div>
-        </div>
+      <button class="save-btn" onclick="saveDay()">💾 আজকের আমল সংরক্ষণ</button>
+    </div>
+    <div class="month-card">
+      <div class="section-label">📅 মাসিক ওভারভিউ</div>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>সম্পূর্ণ</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div>আংশিক</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--unchecked)"></div>খালি</div>
       </div>
     </div>
   </div>
-
-</div><!-- /#appScreen -->
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// WAIT FOR FIREBASE MODULE TO LOAD
-// ═══════════════════════════════════════════════════════════════
-var _authReady = false;
-var _appData   = {};
-var currentDay = 1;
-var currentUser = null;
-var TOTAL_DAYS  = 30;
-var saveTimer   = null;
-
-// Ramadan 1 = Feb 19, 2026
-var RAMADAN_START = new Date('2026-02-19');
-RAMADAN_START.setHours(0,0,0,0);
-
 var WAKTS = [
   { id: 'fajr',    name: 'ফজর',    icon: '🌅', cls: 'wakt-fajr',    sunnahLabel: '২ রাকাত (আগে)' },
   { id: 'dhuhr',   name: 'যোহর',   icon: '☀️',  cls: 'wakt-dhuhr',   sunnahLabel: '৪+২ রাকাত' },
@@ -560,299 +322,147 @@ var WAKTS = [
 ];
 
 var AMALS = [
-  { cat: 'ফরজ আমল', cls: 'fard',   items: ['দ্রুত ইফতার করা', 'সময়মতো সেহরি খাওয়া'] },
+  { cat: 'ফরজ আমল', cls: 'fard', items: ['দ্রুত ইফতার করা', 'সময়মতো সেহরি খাওয়া'] },
   { cat: 'সুন্নাহ আমল', cls: 'sunnah', items: ['সহিহভাবে তিলাওয়াত', 'ইস্তিগফার করা', 'দুরুদ পাঠ', 'তাসবিহ পাঠ', 'বেশি বেশি দোয়া', 'দান-সদকা'] },
   { cat: 'আখলাক ও স্বভাব', cls: 'akhlaq', items: ['মিথ্যা ও গিবত ত্যাগ', 'বদঅভ্যাস ত্যাগ', 'শোকর', 'উদারতা'] }
 ];
 
-// ─── helpers ──────────────────────────────────────────────────
-function toBn(n) {
-  return String(n).replace(/[0-9]/g, function(c){ return '০১২৩৪৫৬৭৮৯'[+c]; });
-}
+var TOTAL_DAYS = 30;
+var currentDay = 1;
+var data = JSON.parse(localStorage.getItem('ramadan1447') || '{}');
+
 function dayKey(d) { return 'day_' + d; }
-function getDayData(d) { return _appData[dayKey(d)] || {}; }
-function getVal(d, k)  { return getDayData(d)[k] || null; }
+function getDayData(d) { return data[dayKey(d)] || {}; }
+function getVal(d, k) { return getDayData(d)[k] || null; }
 function setVal(d, k, v) {
-  if (!_appData[dayKey(d)]) _appData[dayKey(d)] = {};
-  _appData[dayKey(d)][k] = v;
-  scheduleSave();
-}
-function allAmals() {
-  var r = [];
-  for (var i=0;i<AMALS.length;i++) r = r.concat(AMALS[i].items);
-  return r;
+  if (!data[dayKey(d)]) data[dayKey(d)] = {};
+  data[dayKey(d)][k] = v;
+  localStorage.setItem('ramadan1447', JSON.stringify(data));
 }
 
-// ─── Auto-detect today's Ramadan day ──────────────────────────
-function detectCurrentDay() {
-  var now = new Date();
-  now.setHours(0,0,0,0);
-  var diff = Math.floor((now - RAMADAN_START) / 86400000) + 1;
-  if (diff >= 1 && diff <= 30) currentDay = diff;
-  else if (diff < 1)  currentDay = 1;
-  else currentDay = 30;
+function toBn(n) {
+  return String(n).replace(/[0-9]/g, function(c) { return '০১২৩৪৫৬৭৮৯'[+c]; });
 }
 
-// ─── FIREBASE AUTH ────────────────────────────────────────────
-function waitForFirebase(cb) {
-  if (window._auth && window._fbFns) { cb(); }
-  else { setTimeout(function(){ waitForFirebase(cb); }, 50); }
-}
-
-waitForFirebase(function() {
-  var fns = window._fbFns;
-  fns.onAuthStateChanged(window._auth, function(user) {
-    document.getElementById('loadingScreen').classList.add('hidden');
-    if (user) {
-      currentUser = user;
-      showApp(user);
-    } else {
-      document.getElementById('authScreen').classList.remove('hidden');
-    }
-  });
-});
-
-function showApp(user) {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appScreen').classList.remove('hidden');
-
-  var name = user.displayName || user.email.split('@')[0];
-  document.getElementById('userName').textContent  = name;
-  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-
-  detectCurrentDay();
-  loadFromCloud();
-}
-
-// ─── AUTH UI ──────────────────────────────────────────────────
-function switchTab(tab) {
-  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-  document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-  document.getElementById('loginTab').classList.toggle('active', tab === 'login');
-  document.getElementById('registerTab').classList.toggle('active', tab !== 'login');
-  document.getElementById('authError').style.display = 'none';
-}
-
-function showAuthError(msg) {
-  var el = document.getElementById('authError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function doLogin() {
-  var email = document.getElementById('loginEmail').value.trim();
-  var pass  = document.getElementById('loginPass').value;
-  if (!email || !pass) { showAuthError('ইমেইল ও পাসওয়ার্ড দিন'); return; }
-  var btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.textContent = 'লগইন হচ্ছে...';
-  var fns = window._fbFns;
-  fns.signInWithEmailAndPassword(window._auth, email, pass)
-    .then(function() { btn.disabled=false; btn.textContent='লগইন করুন'; })
-    .catch(function(e) {
-      btn.disabled=false; btn.textContent='লগইন করুন';
-      showAuthError(getAuthErrorMsg(e.code));
-    });
-}
-
-function doRegister() {
-  var name  = document.getElementById('regName').value.trim();
-  var email = document.getElementById('regEmail').value.trim();
-  var pass  = document.getElementById('regPass').value;
-  if (!name)  { showAuthError('আপনার নাম লিখুন'); return; }
-  if (!email) { showAuthError('ইমেইল লিখুন'); return; }
-  if (pass.length < 6) { showAuthError('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে'); return; }
-  var btn = document.getElementById('registerBtn');
-  btn.disabled = true; btn.textContent = 'তৈরি হচ্ছে...';
-  var fns = window._fbFns;
-  fns.createUserWithEmailAndPassword(window._auth, email, pass)
-    .then(function(cred) {
-      return fns.updateProfile(cred.user, { displayName: name });
-    })
-    .then(function() { btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন'; })
-    .catch(function(e) {
-      btn.disabled=false; btn.textContent='অ্যাকাউন্ট তৈরি করুন';
-      showAuthError(getAuthErrorMsg(e.code));
-    });
-}
-
-function doLogout() {
-  if (!confirm('লগআউট করবেন?')) return;
-  window._fbFns.signOut(window._auth).then(function() {
-    document.getElementById('appScreen').classList.add('hidden');
-    document.getElementById('authScreen').classList.remove('hidden');
-    _appData = {};
-  });
-}
-
-function getAuthErrorMsg(code) {
-  var msgs = {
-    'auth/invalid-email':          'ইমেইল ঠিকানা সঠিক নয়',
-    'auth/user-not-found':         'এই ইমেইলে কোনো অ্যাকাউন্ট নেই',
-    'auth/wrong-password':         'পাসওয়ার্ড ভুল হয়েছে',
-    'auth/email-already-in-use':   'এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট আছে',
-    'auth/weak-password':          'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর দিন',
-    'auth/too-many-requests':      'অনেকবার চেষ্টা হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন',
-    'auth/invalid-credential':     'ইমেইল বা পাসওয়ার্ড ভুল হয়েছে',
-  };
-  return msgs[code] || ('সমস্যা হয়েছে: ' + code);
-}
-
-// ─── CLOUD SYNC ───────────────────────────────────────────────
-function setSyncStatus(status) {
-  var dot   = document.getElementById('syncDot');
-  var label = document.getElementById('syncLabel');
-  if (status === 'syncing') { dot.className='sync-dot syncing'; label.textContent='সিঙ্ক হচ্ছে...'; }
-  else if (status === 'ok') { dot.className='sync-dot';         label.textContent='সিঙ্ক হয়েছে'; }
-  else                      { dot.className='sync-dot offline'; label.textContent='অফলাইন'; }
-}
-
-function loadFromCloud() {
-  if (!currentUser) return;
-  setSyncStatus('syncing');
-  var fns = window._fbFns;
-  var ref = fns.doc(window._db, 'users', currentUser.uid);
-  // Real-time listener — updates UI whenever data changes on ANY device
-  fns.onSnapshot(ref, function(snap) {
-    if (snap.exists()) {
-      _appData = snap.data().ramadanData || {};
-    } else {
-      _appData = {};
-    }
-    setSyncStatus('ok');
-    renderTracker();
-  }, function(err) {
-    setSyncStatus('offline');
-    console.error(err);
-  });
-}
-
-function scheduleSave() {
-  setSyncStatus('syncing');
-  if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(function() { saveToCloud(true); }, 1200);
-}
-
-function saveToCloud(silent) {
-  if (!currentUser) return;
-  var fns = window._fbFns;
-  var ref = fns.doc(window._db, 'users', currentUser.uid);
-  fns.setDoc(ref, {
-    ramadanData: _appData,
-    lastUpdated: new Date().toISOString(),
-    userName: currentUser.displayName || ''
-  }, { merge: true })
-  .then(function() {
-    setSyncStatus('ok');
-    if (!silent) showToast('✅ ক্লাউডে সংরক্ষিত হয়েছে!');
-  })
-  .catch(function(e) {
-    setSyncStatus('offline');
-    if (!silent) showToast('❌ সংরক্ষণ ব্যর্থ হয়েছে');
-    console.error(e);
-  });
-}
-
-// ─── NAMAZ RENDER ─────────────────────────────────────────────
+// ── NAMAZ ──────────────────────────────────────────────────────────────────
 function renderNamaz() {
   var grid = document.getElementById('namazGrid');
   grid.innerHTML = '';
+
   for (var i = 0; i < WAKTS.length; i++) {
-    var w   = WAKTS[i];
-    var loc  = getVal(currentDay, 'nz_'+w.id+'_loc')    || 'none';
-    var fard = getVal(currentDay, 'nz_'+w.id+'_fard')   || false;
-    var sun  = getVal(currentDay, 'nz_'+w.id+'_sunnah') || false;
+    var w = WAKTS[i];
+    var loc  = getVal(currentDay, 'nz_' + w.id + '_loc')    || 'none';
+    var fard = getVal(currentDay, 'nz_' + w.id + '_fard')   || false;
+    var sun  = getVal(currentDay, 'nz_' + w.id + '_sunnah') || false;
+
     var card = document.createElement('div');
     card.className = 'wakt-card ' + w.cls;
     card.innerHTML =
-      '<div class="wakt-header"><span class="wakt-name">'+w.name+'</span><span class="wakt-icon">'+w.icon+'</span></div>'+
-      '<div class="wakt-body">'+
-        '<div class="location-toggle">'+
-          '<button class="loc-btn'+(loc==='home'?' active-home':'')+'" onclick="setLoc(\''+w.id+'\',\'home\')">🏠 বাড়ি</button>'+
-          '<button class="loc-btn'+(loc==='masjid'?' active-masjid':'')+'" onclick="setLoc(\''+w.id+'\',\'masjid\')">🕌 মসজিদ</button>'+
-        '</div>'+
-        '<div class="ncheck-row">'+
-          '<div class="nchk'+(fard?' fard-on':'')+'" onclick="toggleNaz(\''+w.id+'\',\'fard\',this)">&#10003;</div>'+
-          '<span class="nchk-label">ফরজ নামাজ আদায়</span>'+
-        '</div>'+
-        '<div class="ncheck-row">'+
-          '<div class="nchk'+(sun?' sunnah-on':'')+'" onclick="toggleNaz(\''+w.id+'\',\'sunnah\',this)">&#10003;</div>'+
-          '<span class="nchk-label">সুন্নাহ · '+w.sunnahLabel+'</span>'+
-        '</div>'+
+      '<div class="wakt-header">' +
+        '<span class="wakt-name">' + w.name + '</span>' +
+        '<span class="wakt-icon">' + w.icon + '</span>' +
+      '</div>' +
+      '<div class="wakt-body">' +
+        '<div class="location-toggle">' +
+          '<button class="loc-btn' + (loc === 'home'   ? ' active-home'   : '') + '" ' +
+            'onclick="setLoc(\'' + w.id + '\',\'home\')">🏠 বাড়ি</button>' +
+          '<button class="loc-btn' + (loc === 'masjid' ? ' active-masjid' : '') + '" ' +
+            'onclick="setLoc(\'' + w.id + '\',\'masjid\')">🕌 মসজিদ</button>' +
+        '</div>' +
+        '<div class="ncheck-row">' +
+          '<div class="nchk' + (fard ? ' fard-on' : '') + '" ' +
+            'onclick="toggleNaz(\'' + w.id + '\',\'fard\',this)">&#10003;</div>' +
+          '<span class="nchk-label">ফরজ নামাজ আদায়</span>' +
+        '</div>' +
+        '<div class="ncheck-row">' +
+          '<div class="nchk' + (sun ? ' sunnah-on' : '') + '" ' +
+            'onclick="toggleNaz(\'' + w.id + '\',\'sunnah\',this)">&#10003;</div>' +
+          '<span class="nchk-label">সুন্নাহ · ' + w.sunnahLabel + '</span>' +
+        '</div>' +
       '</div>';
     grid.appendChild(card);
   }
+
   var tarawih  = getVal(currentDay, 'nz_tarawih');
   var tahajjud = getVal(currentDay, 'nz_tahajjud');
-  document.getElementById('tarawihCard').className  = 'special-card'+(tarawih ?' done-tarawih':'');
-  document.getElementById('tahajjudCard').className = 'special-card'+(tahajjud?' done-tahajjud':'');
-  var tr = getVal(currentDay,'nz_tarawih_rakat')  || 0;
-  var tj = getVal(currentDay,'nz_tahajjud_rakat') || 0;
-  document.getElementById('tarawihRakat').textContent  = toBn(tr);
-  document.getElementById('tahajjudRakat').textContent = toBn(tj);
+  document.getElementById('tarawihCard').className  = 'special-card' + (tarawih  ? ' done-tarawih'  : '');
+  document.getElementById('tahajjudCard').className = 'special-card' + (tahajjud ? ' done-tahajjud' : '');
+  var tRakat = getVal(currentDay, 'nz_tarawih_rakat') || 0;
+  var jRakat = getVal(currentDay, 'nz_tahajjud_rakat') || 0;
+  document.getElementById('tarawihRakat').textContent  = toBn(tRakat);
+  document.getElementById('tahajjudRakat').textContent = toBn(jRakat);
 }
 
 function setLoc(waktId, loc) {
-  var cur = getVal(currentDay,'nz_'+waktId+'_loc');
-  setVal(currentDay,'nz_'+waktId+'_loc', cur===loc?'none':loc);
+  var cur = getVal(currentDay, 'nz_' + waktId + '_loc');
+  setVal(currentDay, 'nz_' + waktId + '_loc', cur === loc ? 'none' : loc);
   renderNamaz();
 }
-function toggleNaz(waktId, field) {
-  var k = 'nz_'+waktId+'_'+field;
-  setVal(currentDay, k, !getVal(currentDay,k));
+
+function toggleNaz(waktId, field, el) {
+  var k = 'nz_' + waktId + '_' + field;
+  var cur = getVal(currentDay, k);
+  setVal(currentDay, k, !cur);
   renderNamaz();
 }
+
 function toggleSpecial(which) {
-  setVal(currentDay,'nz_'+which, !getVal(currentDay,'nz_'+which));
+  var k = 'nz_' + which;
+  setVal(currentDay, k, !getVal(currentDay, k));
   renderNamaz();
 }
+
 function changeRakat(which, delta) {
-  var k   = 'nz_'+which+'_rakat';
+  var k = 'nz_' + which + '_rakat';
   var cur = getVal(currentDay, k) || 0;
   var next = Math.max(0, cur + delta);
   setVal(currentDay, k, next);
-  if (next > 0) setVal(currentDay,'nz_'+which, true);
+  // Auto-mark as done if rakat > 0
+  if (next > 0) setVal(currentDay, 'nz_' + which, true);
   renderNamaz();
 }
 
-// ─── AMAL TRACKER ─────────────────────────────────────────────
+// ── AMAL TRACKER ───────────────────────────────────────────────────────────
 function renderTracker() {
   var sec = document.getElementById('trackerSection');
-  var cats = sec.querySelectorAll('.category');
-  for (var x=0;x<cats.length;x++) cats[x].remove();
+  var existing = sec.querySelectorAll('.category');
+  for (var i = 0; i < existing.length; i++) existing[i].remove();
 
-  for (var ci=0;ci<AMALS.length;ci++) {
+  for (var ci = 0; ci < AMALS.length; ci++) {
     var cat = AMALS[ci];
     var dd  = getDayData(currentDay);
     var done = 0;
-    for (var ii=0;ii<cat.items.length;ii++) if(dd[cat.items[ii]]) done++;
+    for (var ii = 0; ii < cat.items.length; ii++) if (dd[cat.items[ii]]) done++;
 
     var rows = '';
-    for (var ji=0;ji<cat.items.length;ji++) {
+    for (var ji = 0; ji < cat.items.length; ji++) {
       var item = cat.items[ji];
-      var chk  = dd[item]?' checked':'';
+      var chk  = dd[item] ? ' checked' : '';
       var str  = calcStreak(item);
       var safe = item.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-      rows += '<div class="amal-row">'+
-        '<div class="checkbox'+chk+'" onclick="toggleAmal(\''+safe+'\',this)"></div>'+
-        '<span class="amal-name">'+item+'</span>'+
-        (str>1?'<span class="amal-streak">🔥'+toBn(str)+'</span>':'')+
+      rows +=
+        '<div class="amal-row">' +
+          '<div class="checkbox' + chk + '" onclick="toggleAmal(\'' + safe + '\',this)"></div>' +
+          '<span class="amal-name">' + item + '</span>' +
+          (str > 1 ? '<span class="amal-streak">🔥' + toBn(str) + '</span>' : '') +
         '</div>';
     }
+
     var div = document.createElement('div');
     div.className = 'category';
     div.innerHTML =
-      '<div class="category-header '+cat.cls+'" onclick="toggleCat(this)">'+
-        '<span class="cat-name">'+cat.cat+'</span>'+
-        '<div class="cat-meta">'+
-          '<span class="cat-progress">'+toBn(done)+'/'+toBn(cat.items.length)+'</span>'+
-          '<span class="cat-toggle">&#9662;</span>'+
-        '</div>'+
-      '</div>'+
-      '<div class="category-body">'+rows+'</div>';
+      '<div class="category-header ' + cat.cls + '" onclick="toggleCat(this)">' +
+        '<span class="cat-name">' + cat.cat + '</span>' +
+        '<div class="cat-meta">' +
+          '<span class="cat-progress">' + toBn(done) + '/' + toBn(cat.items.length) + '</span>' +
+          '<span class="cat-toggle">&#9662;</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="category-body">' + rows + '</div>';
     sec.appendChild(div);
   }
 
-  document.getElementById('dayLabel').textContent = toBn(currentDay)+' রমজান';
+  document.getElementById('dayLabel').textContent = toBn(currentDay) + ' রমজান';
   renderNamaz();
   updateStats();
   updateHeatmap();
@@ -860,68 +470,99 @@ function renderTracker() {
 }
 
 function toggleCat(hdr) { hdr.parentElement.classList.toggle('collapsed'); }
+
 function toggleAmal(name, el) {
-  setVal(currentDay, name, !el.classList.contains('checked'));
+  var cur = el.classList.contains('checked');
+  setVal(currentDay, name, !cur);
   renderTracker();
 }
+
 function calcStreak(amal) {
   var s = 0;
-  for (var d=currentDay-1;d>=1;d--) { if(getDayData(d)[amal]) s++; else break; }
+  for (var d = currentDay - 1; d >= 1; d--) { if (getDayData(d)[amal]) s++; else break; }
   if (getDayData(currentDay)[amal]) s++;
   return s;
 }
 
 function updateProgress() {
-  var all = allAmals(), dd = getDayData(currentDay), done=0;
-  for (var i=0;i<all.length;i++) if(dd[all[i]]) done++;
-  document.getElementById('dayProgress').style.width = Math.round(done/all.length*100)+'%';
+  var all = [];
+  for (var i = 0; i < AMALS.length; i++) all = all.concat(AMALS[i].items);
+  var dd = getDayData(currentDay);
+  var done = 0; for (var i = 0; i < all.length; i++) if (dd[all[i]]) done++;
+  document.getElementById('dayProgress').style.width = Math.round(done / all.length * 100) + '%';
 }
+
 function updateStats() {
-  var all = allAmals();
-  var dd = getDayData(currentDay), today=0;
-  for (var i=0;i<all.length;i++) if(dd[all[i]]) today++;
-  document.getElementById('statAmal').textContent = toBn(today);
-  var full=0, total=0;
-  for (var d=1;d<=TOTAL_DAYS;d++) {
-    var ddd=getDayData(d), cnt=0;
-    for (var i=0;i<all.length;i++) if(ddd[all[i]]) cnt++;
-    total+=cnt; if(cnt===all.length) full++;
+  var all = [];
+  for (var i = 0; i < AMALS.length; i++) all = all.concat(AMALS[i].items);
+  var dd = getDayData(currentDay);
+  var todayDone = 0; for (var i = 0; i < all.length; i++) if (dd[all[i]]) todayDone++;
+  document.getElementById('statAmal').textContent = toBn(todayDone);
+
+  var full = 0, total = 0;
+  for (var d = 1; d <= TOTAL_DAYS; d++) {
+    var ddd = getDayData(d);
+    var cnt = 0; for (var i = 0; i < all.length; i++) if (ddd[all[i]]) cnt++;
+    total += cnt;
+    if (cnt === all.length) full++;
   }
   document.getElementById('statDone').textContent  = toBn(full);
   document.getElementById('statTotal').textContent = toBn(total);
-  var streak=0;
-  for (var d=currentDay;d>=1;d--) {
-    var ddd2=getDayData(d), cnt2=0;
-    for (var i=0;i<all.length;i++) if(ddd2[all[i]]) cnt2++;
-    if(cnt2>0) streak++; else break;
+
+  var streak = 0;
+  for (var d = currentDay; d >= 1; d--) {
+    var ddd2 = getDayData(d);
+    var cnt2 = 0; for (var i = 0; i < all.length; i++) if (ddd2[all[i]]) cnt2++;
+    if (cnt2 > 0) streak++; else break;
   }
   document.getElementById('statStreak').textContent = toBn(streak);
 }
+
 function updateHeatmap() {
-  var hm=document.getElementById('heatmap'), all=allAmals();
-  hm.innerHTML='';
-  for (var d=1;d<=TOTAL_DAYS;d++) {
-    var dd=getDayData(d), cnt=0;
-    for (var i=0;i<all.length;i++) if(dd[all[i]]) cnt++;
-    var pct=cnt/all.length;
-    var cls=d<=currentDay?(pct>=1?'hm-great':pct>=0.5?'hm-done':pct>0?'hm-partial':'hm-empty'):'hm-future';
-    var cell=document.createElement('div');
-    cell.className='hm-cell '+cls+(d===currentDay?' hm-active':'');
-    cell.title=d+' রমজান';
-    cell.textContent=d;
-    (function(day){cell.onclick=function(){currentDay=day;renderTracker();};})(d);
+  var hm  = document.getElementById('heatmap');
+  var all = [];
+  for (var i = 0; i < AMALS.length; i++) all = all.concat(AMALS[i].items);
+  hm.innerHTML = '';
+  for (var d = 1; d <= TOTAL_DAYS; d++) {
+    var dd  = getDayData(d);
+    var cnt = 0; for (var i = 0; i < all.length; i++) if (dd[all[i]]) cnt++;
+    var pct = cnt / all.length;
+    var cls = d <= currentDay
+      ? (pct >= 1 ? 'hm-great' : pct >= 0.5 ? 'hm-done' : pct > 0 ? 'hm-partial' : 'hm-empty')
+      : 'hm-future';
+    var cell = document.createElement('div');
+    cell.className   = 'hm-cell ' + cls + (d === currentDay ? ' hm-active' : '');
+    cell.title       = d + ' রমজান';
+    cell.textContent = d;
+    (function(day) { cell.onclick = function() { currentDay = day; renderTracker(); }; })(d);
     hm.appendChild(cell);
   }
 }
 
-function prevDay() { if(currentDay>1)          {currentDay--;renderTracker();} }
-function nextDay() { if(currentDay<TOTAL_DAYS)  {currentDay++;renderTracker();} }
+function prevDay() { if (currentDay > 1)          { currentDay--; renderTracker(); } }
+function nextDay() { if (currentDay < TOTAL_DAYS) { currentDay++; renderTracker(); } }
 
-function showToast(msg) {
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2800);
+function saveDay() {
+  localStorage.setItem('ramadan1447', JSON.stringify(data));
+  var t = document.getElementById('toast');
+  t.textContent = '✅ আজকের আমল সংরক্ষিত হয়েছে!';
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
+
+// Auto-detect Ramadan day — 1st Ramadan = 19 Feb 2026
+(function() {
+  var start = new Date('2026-02-19');
+  start.setHours(0,0,0,0);
+  var now = new Date();
+  now.setHours(0,0,0,0);
+  var diff = Math.floor((now - start) / 86400000) + 1;
+  if (diff >= 1 && diff <= 30) currentDay = diff;
+  else if (diff < 1) currentDay = 1;
+  else currentDay = 30;
+})();
+
+renderTracker();
 </script>
 </body>
 </html>
